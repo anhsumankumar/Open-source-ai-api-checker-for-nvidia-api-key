@@ -1,10 +1,12 @@
 <div align="center">
 
-# NVIDIA AI API Checker
+# NVIDIA AI API Checker 🚀
 
 **Explore NVIDIA-hosted models. Check their likely task type. Try text chat from one clean workspace.**
 
-A small, local-first dashboard for developers exploring the NVIDIA API Catalog.
+A powerful, local-first dashboard for developers exploring the NVIDIA API Catalog. Easily check which models are accessible with your API key, analyze their task types (chat, vision, embeddings, etc.), and test text chat capabilities directly.
+
+**Developed by Anshuman** ✨
 
 </div>
 
