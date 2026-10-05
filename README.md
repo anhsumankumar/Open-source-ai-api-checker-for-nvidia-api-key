@@ -68,4 +68,4 @@ Issues and pull requests are welcome. Include reproduction steps and remove API 
 
 ## License
 
-No license has been selected for this repository yet. Add a license file before redistributing or reusing the code under open-source terms.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
