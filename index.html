@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<title>NVIDIA Model Finder</title>
+
+
+
+<style>
+
+    * {
+
+        box-sizing: border-box;
+
+    }
+
+
+
+    body {
+
+        margin: 0;
+
+        font-family: Arial, sans-serif;
+
+        background: #0b0f14;
+
+        color: #fff;
+
+    }
+
+
+
+    .container {
+
+        max-width: 1100px;
+
+        margin: auto;
+
+        padding: 40px 20px;
+
+    }
+
+
+
+    h1 {
+
+        margin: 0;
+
+        font-size: 32px;
+
+    }
+
+
+
+    .subtitle {
+
+        color: #8d98a8;
+
+        margin-top: 8px;
+
+        margin-bottom: 30px;
+
+    }
+
+
+
+    .api-box {
+
+        background: #121821;
+
+        border: 1px solid #26313f;
+
+        border-radius: 14px;
+
+        padding: 20px;
+
+        margin-bottom: 25px;
+
+    }
+
+
+
+    label {
+
+        display: block;
+
+        margin-bottom: 10px;
+
+        color: #aeb8c5;
+
+        font-size: 14px;
+
+    }
+
+
+
+    .input-row {
+
+        display: flex;
+
+        gap: 10px;
+
+    }
+
+
+
+    input {
+
+        flex: 1;
+
+        padding: 14px 16px;
+
+        border-radius: 10px;
+
+        border: 1px solid #303b49;
+
+        background: #0d131b;
+
+        color: #fff;
+
+        outline: none;
+
+        font-size: 14px;
+
+    }
+
+
+
+    input:focus {
+
+        border-color: #76b900;
+
+    }
+
+
+
+    button {
+
+        border: none;
+
+        border-radius: 10px;
+
+        padding: 0 22px;
+
+        background: #76b900;
+
+        color: #000;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+    }
+
+
+
+    button:hover {
+
+        background: #8bd000;
+
+    }
+
+
+
+    button:disabled {
+
+        opacity: .6;
+
+        cursor: wait;
+
+    }
+
+
+
+    .status {
+
+        padding: 14px 16px;
+
+        border-radius: 10px;
+
+        background: #111720;
+
+        border: 1px solid #202b38;
+
+        margin-bottom: 25px;
+
+        color: #aeb8c5;
+
+    }
+
+
+
+    .status.error {
+
+        background: #241313;
+
+        border-color: #6a2929;
+
+        color: #ff8585;
+
+    }
+
+
+
+    .status.success {
+
+        background: #132313;
+
+        border-color: #315d31;
+
+        color: #9ee39e;
+
+    }
+
+
+
+    .stats {
+
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 15px;
+
+        margin-bottom: 25px;
+
+    }
+
+
+
+    .stat {
+
+        background: #121821;
+
+        border: 1px solid #26313f;
+
+        border-radius: 12px;
+
+        padding: 18px;
+
+    }
+
+
+
+    .stat-title {
+
+        color: #8f9aaa;
+
+        font-size: 13px;
+
+        margin-bottom: 6px;
+
+    }
+
+
+
+    .stat-value {
+
+        font-size: 25px;
+
+        font-weight: bold;
+
+    }
+
+
+
+    .search {
+
+        width: 100%;
+
+        margin-bottom: 20px;
+
+    }
+
+
+
+    .models {
+
+        display: grid;
+
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+        gap: 15px;
+
+    }
+
+
+
+    .model {
+
+        background: #111720;
+
+        border: 1px solid #202b38;
+
+        border-radius: 14px;
+
+        padding: 18px;
+
+    }
+
+
+
+    .model:hover {
+
+        border-color: #76b900;
+
+    }
+    .model-actions {
+        margin-top: 16px;
+    }
+
+    .model-type-label {
+        display: inline-block;
+        padding: 3px 7px;
+        border: 1px solid #354251;
+        border-radius: 4px;
+        color: #d4dde6;
+        background: #1a222c;
+        font-size: 12px;
+    }
+
+    .chat-unavailable {
+        color: #8792a2;
+        font-size: 13px;
+    }
+
+    .test-model-btn {
+        min-height: 40px;
+        padding: 0 16px;
+    }
+
+    .chat-dialog {
+        width: min(620px, calc(100% - 28px));
+        max-height: min(760px, calc(100% - 28px));
+        padding: 0;
+        color: #fff;
+        background: #111720;
+        border: 1px solid #344150;
+        border-radius: 12px;
+    }
+
+    .chat-dialog::backdrop {
+        background: rgba(0, 0, 0, .72);
+    }
+
+    .chat-shell {
+        display: flex;
+        flex-direction: column;
+        max-height: min(760px, calc(100dvh - 30px));
+    }
+
+    .chat-header, .chat-form {
+        padding: 16px;
+        border-bottom: 1px solid #26313f;
+    }
+
+    .chat-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .chat-title {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .chat-model-id {
+        margin-top: 6px;
+        color: #aeb8c5;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+    .chat-close {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        flex: 0 0 auto;
+        font-size: 20px;
+    }
+
+    .chat-log {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 220px;
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .chat-message {
+        max-width: 88%;
+        padding: 11px 13px;
+        border: 1px solid #303b49;
+        border-radius: 10px;
+        background: #0d131b;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .chat-message.user {
+        align-self: flex-end;
+        border-color: #527e1b;
+        background: #1b2911;
+    }
+
+    .chat-message.error {
+        max-width: 100%;
+        color: #ff9999;
+        border-color: #6a2929;
+        background: #241313;
+    }
+
+    .chat-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        border-top: 1px solid #26313f;
+        border-bottom: 0;
+    }
+
+    .chat-form textarea {
+        min-height: 46px;
+        max-height: 140px;
+        flex: 1;
+        resize: vertical;
+        padding: 12px;
+        color: #fff;
+        background: #0d131b;
+        border: 1px solid #303b49;
+        border-radius: 8px;
+        font: inherit;
+    }
+
+    .chat-form textarea:focus {
+        outline: 1px solid #76b900;
+        border-color: #76b900;
+    }
+
+
+
+
+    .model-name {
+
+        font-size: 16px;
+
+        font-weight: bold;
+
+        word-break: break-word;
+
+        margin-bottom: 12px;
+
+    }
+
+
+
+    .meta {
+
+        color: #8792a2;
+
+        font-size: 13px;
+
+        line-height: 1.7;
+
+    }
+
+
+
+    .empty {
+
+        text-align: center;
+
+        padding: 60px 20px;
+
+        color: #768191;
+
+    }
+
+
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .report-btn {
+        min-height: 46px;
+        padding: 0 18px;
+    }
+
+    .report-btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 700px) {
+
+        .input-row {
+
+            flex-direction: column;
+
+        }
+
+
+
+        button {
+
+            height: 46px;
+
+        }
+
+
+
+        .stats {
+
+            grid-template-columns: 1fr;
+
+        }
+
+    }
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="container">
+
+
+
+    <h1>NVIDIA AI Model Finder</h1>
+
+
+
+    <div class="subtitle">
+
+        Enter your NVIDIA API key and load the available models.
+
+    </div>
+
+
+
+    <div class="api-box">
+
+
+
+        <label for="apiKey">
+
+            NVIDIA API Key
+
+        </label>
+
+
+
+        <div class="input-row">
+
+
+
+            <input
+
+                id="apiKey"
+
+                type="password"
+
+                placeholder="nvapi-xxxxxxxxxxxxxxxx"
+
+                autocomplete="off"
+
+            >
+
+
+
+            <button id="loadBtn">
+
+                Load Models
+
+            </button>
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <div id="status" class="status">
+
+        Enter your API key and click "Load Models".
+
+    </div>
+
+
+
+    <div class="stats">
+
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+
+                Total Models
+
+            </div>
+
+
+
+            <div id="totalModels" class="stat-value">
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+
+                Visible Models
+
+            </div>
+
+
+
+            <div id="visibleModels" class="stat-value">
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+
+                Last Updated
+
+            </div>
+
+
+
+            <div id="updated" class="stat-value">
+
+                --
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <input
+
+        id="search"
+
+        class="search"
+
+        type="text"
+
+        placeholder="Search models..."
+
+    >
+
+
+
+    <div class="actions">
+        <button id="downloadReportBtn" class="report-btn" disabled>
+            Download Report
+        </button>
+    </div>
+
+    <div id="models" class="models">
+
+
+
+
+        <div class="empty">
+
+            No models loaded.
+
+        </div>
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+<dialog id="chatDialog" class="chat-dialog" aria-labelledby="chatTitle">
+    <div class="chat-shell">
+        <div class="chat-header">
+            <div>
+                <h2 id="chatTitle" class="chat-title">Test model chat</h2>
+                <div id="chatModelId" class="chat-model-id"></div>
+                <div class="chat-model-id">Text chat test; image and video generation may use separate APIs.</div>
+            </div>
+            <button id="closeChatBtn" class="chat-close" type="button" aria-label="Close chat" title="Close chat">&times;</button>
+        </div>
+        <div id="chatLog" class="chat-log" role="log" aria-live="polite"></div>
+        <form id="chatForm" class="chat-form">
+            <textarea id="chatInput" rows="2" placeholder="Ask this model something..." aria-label="Message" required></textarea>
+            <button id="sendChatBtn" type="submit">Send</button>
+        </form>
+    </div>
+</dialog>
+
+<script>
+
+
+
+const apiKeyInput = document.getElementById("apiKey");
+
+const loadBtn = document.getElementById("loadBtn");
+
+const statusBox = document.getElementById("status");
+
+
+
+const totalModels = document.getElementById("totalModels");
+
+const visibleModels = document.getElementById("visibleModels");
+
+const updated = document.getElementById("updated");
+
+
+
+const searchInput = document.getElementById("search");
+
+const modelsContainer = document.getElementById("models");
+const downloadReportBtn = document.getElementById("downloadReportBtn");
+const chatDialog = document.getElementById("chatDialog");
+const chatModelId = document.getElementById("chatModelId");
+const chatLog = document.getElementById("chatLog");
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const sendChatBtn = document.getElementById("sendChatBtn");
+const closeChatBtn = document.getElementById("closeChatBtn");
+
+
+
+let allModels = [];
+let activeChatModel = "";
+let chatMessages = [];
+
+
+
+
+
+/*
+
+    IMPORTANT:
+
+
+
+    Do NOT call NVIDIA directly from the browser.
+
+
+
+    Your backend should expose:
+
+
+
+        /api/nvidia/models
+
+
+
+    and forward the request to:
+
+
+
+        https\://integrate.api.nvidia.com/v1/models
+
+*/
+
+
+
+async function loadModels() {
+
+
+
+    const apiKey = apiKeyInput.value.trim();
+
+
+
+    if (!apiKey) {
+
+
+
+        showError("Please enter your NVIDIA API key.");
+
+
+
+        return;
+
+    }
+
+
+
+    loadBtn.disabled = true;
+
+    loadBtn.textContent = "Loading...";
+
+
+
+    statusBox.className = "status";
+
+    statusBox.textContent = "Fetching NVIDIA models...";
+
+
+
+    try {
+
+
+
+        const response = await fetch("/api/nvidia/models", {
+
+
+
+            method: "POST",
+
+
+
+            headers: {
+
+                "Content-Type": "application/json"
+
+            },
+
+
+
+            body: JSON.stringify({
+
+                apiKey: apiKey
+
+            })
+
+
+
+        });
+
+
+
+
+
+        const data = await response.json();
+
+
+
+
+
+        if (!response.ok) {
+
+
+
+            throw new Error(
+
+                data.error ||
+
+                data.message ||
+
+                `HTTP ${response.status}`
+
+            );
+
+
+
+        }
+
+
+
+
+
+        if (!Array.isArray(data.data)) {
+
+
+
+            throw new Error(
+
+                "Unexpected response from server."
+
+            );
+
+
+
+        }
+
+
+
+
+
+        allModels = data.data;
+
+
+
+
+
+        allModels.sort((a, b) =>
+
+            String(a.id || "")
+
+                .localeCompare(String(b.id || ""))
+
+        );
+
+
+
+
+
+        downloadReportBtn.disabled = allModels.length === 0;
+
+        renderModels(allModels);
+
+
+
+
+
+        totalModels.textContent =
+
+            allModels.length;
+
+
+
+        visibleModels.textContent =
+
+            allModels.length;
+
+
+
+        updated.textContent =
+
+            new Date().toLocaleTimeString();
+
+
+
+
+
+        statusBox.className =
+
+            "status success";
+
+
+
+        statusBox.textContent =
+
+            `Successfully loaded ${allModels.length} NVIDIA models.`;
+
+
+
+
+
+    } catch (error) {
+
+
+
+        console.error(error);
+
+
+
+        showError(error.message);
+
+
+
+    } finally {
+
+
+
+        loadBtn.disabled = false;
+
+        loadBtn.textContent = "Load Models";
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+function modelMetadataText(model) {
+    const flatten = value => {
+        if (Array.isArray(value)) return value.map(flatten).join(" ");
+        if (value && typeof value === "object") return Object.values(value).map(flatten).join(" ");
+        return String(value || "");
+    };
+
+    return [
+        model.id,
+        model.name,
+        model.display_name,
+        model.description,
+        model.task,
+        model.tasks,
+        model.modality,
+        model.modalities,
+        model.capabilities,
+        model.tags,
+        model.type
+    ].map(flatten).join(" ").toLowerCase().replace(/_/g, "-");
+}
+
+function getModelTask(model) {
+    const metadata = modelMetadataText(model);
+
+    if (/\b(safety|guard|moderation)\b|content[-\s]?safety/.test(metadata)) {
+        return { label: "Safety / moderation", canChat: false };
+    }
+    if (/embed|embedding|retriev|vector|\be5\b|\bbge\b/.test(metadata)) {
+        return { label: "Embeddings / retrieval", canChat: false };
+    }
+    if (/rerank|ranking|cross[-\s]?encoder/.test(metadata)) {
+        return { label: "Reranking", canChat: false };
+    }
+    if (/\b(text[\s-]*to[\s-]*video|video[\s-]*generation)\b/.test(metadata) || /\bvideo\b/.test(metadata)) {
+        return { label: "Video generation", canChat: false };
+    }
+    if (/\b(image[\s-]*to[\s-]*image|img[\s-]*to[\s-]*img|img2img)\b/.test(metadata)) {
+        return { label: "Image-to-image", canChat: false };
+    }
+    if (/\b(text[\s-]*to[\s-]*image|stable[-\s]?diffusion|flux|image[-\s]?generation)\b/.test(metadata)) {
+        return { label: "Text-to-image", canChat: false };
+    }
+    if (/\b(audio|speech|asr|tts|whisper|parakeet|canary|riva)\b/.test(metadata)) {
+        return { label: "Audio / speech", canChat: false };
+    }
+    if (/\b(vlm|vision|llava|visual|multimodal|dinov2|siglip|clip)\b/.test(metadata)) {
+        return { label: "Vision / image understanding", canChat: false };
+    }
+    if (/\b(text[\s-]*to[\s-]*text|text[-\s]?generation|chat|chatqa|instruct|reasoning|nemotron|llama|mistral|mixtral|qwen|deepseek|gemma|phi|command-r|jamba)\b/.test(metadata)) {
+        return { label: "Text-to-text (chat)", canChat: true };
+    }
+
+    return { label: "Unclassified", canChat: false };
+}
+
+function renderModels(models) {
+
+    downloadReportBtn.disabled = models.length === 0;
+
+
+
+    modelsContainer.innerHTML = "";
+
+
+
+    visibleModels.textContent =
+
+        models.length;
+
+
+
+
+
+    if (!models.length) {
+
+
+
+        modelsContainer.innerHTML = `
+
+            <div class="empty">
+
+                No models found.
+
+            </div>
+
+        `;
+
+
+
+        return;
+
+    }
+
+
+
+
+
+    for (const model of models) {
+
+
+
+        const card =
+
+            document.createElement("div");
+
+
+
+        card.className = "model";
+
+
+
+
+
+        const id =
+
+            model.id || "Unknown";
+
+
+
+        const owner =
+
+            model.owned_by || "Unknown";
+
+
+
+        const object =
+
+            model.object || "model";
+
+        const task = getModelTask(model);
+
+
+
+
+
+        card.innerHTML = `
+
+
+
+            <div class="model-name">
+
+                ${escapeHTML(id)}
+
+            </div>
+
+
+
+            <div class="meta">
+
+                Provider:
+
+                <strong>${escapeHTML(owner)}</strong>
+
+                <br>
+
+
+
+                Task:
+
+                <strong class="model-type-label">${escapeHTML(task.label)}</strong>
+                <br>
+
+                API object:
+                <strong>${escapeHTML(object)}</strong>
+
+                <div class="model-actions">
+                    ${task.canChat
+                        ? `<button class="test-model-btn" type="button" data-model-id="${escapeHTML(id)}">Test chat</button>`
+                        : `<span class="chat-unavailable">Chat test unavailable</span>`}
+                </div>
+
+            </div>
+
+
+
+        `;
+
+
+
+
+
+        modelsContainer.appendChild(card);
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+searchInput.addEventListener(
+
+    "input",
+
+    () => {
+
+
+
+        const query =
+
+            searchInput.value
+
+                .trim()
+
+                .toLowerCase();
+
+
+
+
+
+        if (!query) {
+
+
+
+            renderModels(allModels);
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+        const filtered =
+
+            allModels.filter(model => {
+
+
+
+                const text = [
+
+
+
+                    model.id,
+
+                    model.owned_by,
+
+                    model.object
+
+
+
+                ]
+
+                .filter(Boolean)
+
+                .join(" ")
+
+                .toLowerCase();
+
+
+
+
+
+                return text.includes(query);
+
+
+
+            });
+
+
+
+
+
+        renderModels(filtered);
+
+
+
+    }
+
+);
+
+
+
+
+
+function showError(message) {
+
+
+
+    statusBox.className =
+
+        "status error";
+
+
+
+    statusBox.textContent =
+
+        "Error: " + message;
+
+
+
+}
+
+
+
+
+
+function escapeHTML(value) {
+
+
+
+    return String(value)
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+
+
+}
+
+
+
+
+
+loadBtn.addEventListener(
+
+    "click",
+
+    loadModels
+
+);
+
+
+
+
+
+
+function downloadReport() {
+
+    if (!allModels.length) {
+        showError("Load the models first, then download the report.");
+        return;
+    }
+
+    const generatedAt = new Date().toISOString();
+
+    const reportHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVIDIA AI Models Report</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0b0f14;color:#fff;margin:0;padding:30px;}
+.container{max-width:1100px;margin:auto;}
+h1{margin:0 0 8px;}
+.meta{color:#9aa5b5;line-height:1.7;margin-bottom:25px;}
+.model{background:#111720;border:1px solid #273241;border-radius:14px;padding:20px;margin-bottom:16px;}
+.name{font-size:19px;font-weight:700;margin-bottom:10px;word-break:break-word;}
+pre{white-space:pre-wrap;word-break:break-word;background:#0a0e13;border:1px solid #202b38;border-radius:10px;padding:15px;overflow:auto;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>NVIDIA AI Models Report</h1>
+<div class="meta">
+<strong>Total Models:</strong> ${allModels.length}<br>
+<strong>Generated:</strong> ${escapeHTML(generatedAt)}<br>
+<strong>Source:</strong> https://integrate.api.nvidia.com/v1/models
+</div>
+${allModels.map((model, index) => {
+    const name = model && model.id ? model.id : `Model ${index + 1}`;
+    const json = JSON.stringify(model, null, 2);
+    return `
+<div class="model">
+<div class="name">${index + 1}. ${escapeHTML(name)}</div>
+<pre>${escapeHTML(json)}</pre>
+</div>`;
+}).join('')}
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `nvidia_models_report_${new Date().toISOString().replace(/[:.]/g, "-")}.html`;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    statusBox.className = "status success";
+    statusBox.textContent = `Report downloaded with ${allModels.length} models and all returned model fields.`;
+}
+
+downloadReportBtn.addEventListener("click", downloadReport);
+modelsContainer.addEventListener("click", event => {
+    const button = event.target.closest(".test-model-btn");
+    if (!button) return;
+
+    if (!apiKeyInput.value.trim()) {
+        showError("Enter your NVIDIA API key before testing a model.");
+        apiKeyInput.focus();
+        return;
+    }
+
+    activeChatModel = button.dataset.modelId;
+    chatMessages = [];
+    chatLog.replaceChildren();
+    chatModelId.textContent = activeChatModel;
+    appendChatMessage("assistant", "Send a message to check whether this model responds.");
+    chatDialog.showModal();
+    chatInput.focus();
+});
+
+chatForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const content = chatInput.value.trim();
+    const apiKey = apiKeyInput.value.trim();
+    if (!content || sendChatBtn.disabled) return;
+    if (!apiKey) {
+        appendChatMessage("error", "Enter your NVIDIA API key in the main page before sending.");
+        return;
+    }
+
+    chatMessages.push({ role: "user", content });
+    appendChatMessage("user", content);
+    chatInput.value = "";
+    sendChatBtn.disabled = true;
+    sendChatBtn.textContent = "Testing...";
+
+    try {
+        const response = await fetch("/api/nvidia/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                apiKey,
+                model: activeChatModel,
+                messages: chatMessages
+            })
+        });
+        const responseText = await response.text();
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch {
+            if (response.status === 404) {
+                throw new Error("Local chat route not found. Restart the checker with `npm start` and try again.");
+            }
+            throw new Error(responseText || `HTTP ${response.status}`);
+        }
+
+        if (!response.ok) {
+            throw new Error(formatChatApiError(response.status, data));
+        }
+
+        const answer = data.choices?.[0]?.message?.content;
+        if (typeof answer !== "string" || !answer.trim()) {
+            throw new Error("The model returned no text response.");
+        }
+
+        chatMessages.push({ role: "assistant", content: answer });
+        appendChatMessage("assistant", answer);
+    } catch (error) {
+        appendChatMessage("error", `Request failed: ${error.message}`);
+    } finally {
+        sendChatBtn.disabled = false;
+        sendChatBtn.textContent = "Send";
+        chatInput.focus();
+    }
+});
+
+function formatChatApiError(status, data) {
+    const errorValue = data.error;
+    const rawMessage = [
+        data.detail,
+        data.message,
+        typeof errorValue === "string" ? errorValue : errorValue?.message,
+        data.title
+    ].find(value => typeof value === "string" && value.trim());
+    const message = rawMessage || `HTTP ${status}`;
+
+    if (status === 404 && /function.*not found|not found.*account/i.test(message)) {
+        return "NVIDIA returned 404: this model is listed, but its inference function is not available to this API account through chat completions. The model list does not guarantee chat access. Try another Text-to-text model or check this model's NVIDIA API Catalog page for its supported endpoint and access.";
+    }
+    if (status === 401 || status === 403) {
+        return `NVIDIA returned ${status}: the API key is invalid, expired, or does not have access to this model. Check the key and model access in NVIDIA API Catalog.`;
+    }
+    if (status === 429) {
+        return "NVIDIA rate limit or quota reached. Wait and retry, or check the API account's limits.";
+    }
+
+    return `NVIDIA returned HTTP ${status}: ${message}`;
+}
+
+function appendChatMessage(role, content) {
+    const message = document.createElement("div");
+    message.className = `chat-message ${role}`;
+    message.textContent = content;
+    chatLog.appendChild(message);
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+closeChatBtn.addEventListener("click", () => chatDialog.close());
+
+apiKeyInput.addEventListener(
+
+    "keydown",
+
+    event => {
+
+
+
+        if (event.key === "Enter") {
+
+            loadModels();
+
+        }
+
+
+
+    }
+
+);
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
